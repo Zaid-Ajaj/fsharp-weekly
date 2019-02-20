@@ -85,10 +85,8 @@ module App =
 
     let fsharpIconSource =
         match Device.PlatformServices.RuntimePlatform with
-        | Device.iOS -> ImageSource.FromUri(Uri("https://fsharp.org/img/logo/fsharp256.png"))
-        | Device.Android -> ImageSource.FromUri(Uri("https://fsharp.org/img/logo/fsharp256.png"))
         | Device.UWP -> ImageSource.FromFile("Assets/fsharp-icon.png")
-        | _ -> ImageSource.FromUri(Uri("https://fsharp.org/img/logo/fsharp256.png"))
+        | otherwise -> ImageSource.FromUri(Uri("https://fsharp.org/img/logo/fsharp256.png"))
 
     let render (state: State) dispatch =
 
@@ -186,17 +184,16 @@ module App =
                StackLayout.Orientation StackOrientation.Vertical
                StackLayout.GestureRecognizers [
                    // swipe from header to reload blog entries
-                   View.SwipeGestureRecognizer(direction=SwipeDirection.Down, swiped = fun args -> dispatch LoadBlogs)
+                   View.SwipeGestureRecognizer(
+                        direction=SwipeDirection.Down,
+                        swiped = fun args -> dispatch LoadBlogs)
                ]
 
                StackLayout.Children [
                    // header is constant
-                   yield header
+                   header
                    // the content of blogs in scrollable
-                   yield ScrollView.scrollView [
-                       ScrollView.Orientation ScrollOrientation.Vertical
-                       ScrollView.Content content
-                   ]
+                   ScrollView.scrollView [ ScrollView.Content content ]
                ]
             ]
 
@@ -276,15 +273,15 @@ module App =
                             StackLayout.Padding 20.0
                             StackLayout.Children [
                                 Label.label [
-                                    Label.Text "Disable Link Tracking"
+                                    Label.Text "Enable Link Tracking"
                                     Label.FontSize FontSize.Large
                                 ]
 
                                 Switch.switch [
                                     Switch.HorizontalLayout LayoutOptions.EndAndExpand
                                     Switch.VerticalLayout LayoutOptions.Fill
-                                    Switch.IsToggled true
-                                    Switch.ColorWhenEnabled Color.LightBlue
+                                    Switch.IsToggled state.LinkTrackingEnabled
+                                    Switch.Scale 1.5
                                     Switch.OnToggled (fun args -> dispatch ToggleLinkTracking)
                                 ]
                             ]
@@ -344,6 +341,8 @@ module App =
                     ContentPage.Content (renderBlogContent blog)
                 ]
 
+                // if we clicked on the settings button,
+                // add the settings page to the page stack
                 if state.ShowingSettings
                 then yield ContentPage.contentPage [
                     ContentPage.ClassId Pages.settings
