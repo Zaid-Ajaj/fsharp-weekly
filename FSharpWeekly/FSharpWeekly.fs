@@ -7,14 +7,12 @@ open Xamarin.Forms
 open System
 open Types
 
-
 module Pages =
     let [<Literal>] blog = "blog-content"
     let [<Literal>] settings = "settings"
 
 module App =
 
-  
     let initModel = {
         Blogs = Remote.Empty;
         CurrentBlog = None
@@ -27,8 +25,10 @@ module App =
 
     let extractBlogEntries() =
         Cmd.ofAsyncMsg (async {
-            let! blogEntries = Scraper.getBlogEntries()
-            return BlogsLoaded blogEntries
+            let! blogEntries = Async.Catch (Scraper.getBlogEntries())
+            match blogEntries with
+            | Choice1Of2 blogs -> return BlogsLoaded blogs
+            | Choice2Of2 error -> return BlogsLoadFailure "Error while loading blog entries from F# weekly"
         })
 
     let update msg state =
@@ -89,7 +89,6 @@ module App =
         | otherwise -> ImageSource.FromUri(Uri("https://fsharp.org/img/logo/fsharp256.png"))
 
     let render (state: State) dispatch =
-
         // gesture recognizers
         let whenClicked msg = View.ClickGestureRecognizer(command = fun () -> dispatch msg)
         let whenTapped msg = View.TapGestureRecognizer(command = fun () -> dispatch msg)
@@ -105,7 +104,7 @@ module App =
                Image.Width 40.0
                Image.Opacity 0.60
             ]
-
+            
         let header =
              StackLayout.stackLayout [
                  StackLayout.Orientation StackOrientation.Horizontal
@@ -175,7 +174,13 @@ module App =
             match state.Blogs with
             | Empty -> View.BoxView()
             | Loading -> loader 
-            | LoadError errorMsg -> Label.label [ Label.Text errorMsg ]
+            | LoadError errorMsg ->
+                Label.label [
+                    Label.Text errorMsg
+                    Label.Margin 20.0
+                    Label.TextColor Color.Red
+                    Label.HorizontalTextAlignment TextAlignment.Center
+                ]
             | Content blogItems -> renderBlogs blogItems
 
         // no blog selected, load all blogs
@@ -219,7 +224,7 @@ module App =
                         whenClicked (OpenUrl link.Url)
                     ]
                 ]
-
+            
             let renderCategory (category: Category) =
                 StackLayout.stackLayout [
                     StackLayout.Orientation StackOrientation.Vertical
@@ -299,7 +304,8 @@ module App =
                         StackLayout.stackLayout [
                             StackLayout.Orientation StackOrientation.Horizontal
                             StackLayout.HorizontalLayout LayoutOptions.Center
-                            StackLayout.Padding 20.0
+                            StackLayout.VerticalLayout LayoutOptions.EndAndExpand
+                            StackLayout.Padding 10.0
                             StackLayout.Children [
                                 Label.label [ Label.Text "Made with ❤ by"; Label.FontSize FontSize.Medium ]
                                 Label.label [
@@ -311,6 +317,18 @@ module App =
                                         whenTapped (OpenUrl "https://github.com/Zaid-Ajaj")
                                     ]
                                 ]
+                            ]
+                        ]
+
+                        Label.label [
+                            Label.Text "Source code available on Github"
+                            Label.FontSize FontSize.Medium
+                            Label.MarginBottom 20.0
+                            Label.HorizontalLayout LayoutOptions.Center
+                            Label.TextDecorations TextDecorations.Underline
+                            Label.GestureRecognizers [
+                                whenClicked (OpenUrl "https://github.com/Zaid-Ajaj/fsharp-weekly")
+                                whenTapped (OpenUrl "https://github.com/Zaid-Ajaj/fsharp-weekly")
                             ]
                         ]
                     ]
@@ -348,6 +366,7 @@ module App =
                     ContentPage.ClassId Pages.settings
                     ContentPage.HasBackButton (Device.RuntimePlatform <> Device.Android)
                     ContentPage.HasNavigationBar (Device.RuntimePlatform <> Device.Android)
+                    ContentPage.Title "Settings"
                     ContentPage.Content settingsPage
                 ]
             ]    
