@@ -93,30 +93,6 @@
   <Import Project="..\packages\Xamarin.Forms.3.4.0.1009999\build\netstandard2.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.3.4.0.1009999\build\netstandard2.0\Xamarin.Forms.targets')" />
   <Import Project="..\.nuget\NuGet.targets" />
   <ItemGroup>
-    <None Include="Properties\AndroidManifest.xml" />
-    <Compile Include="Properties\AssemblyInfo.fs" />
-    <Compile Include="MainActivity.fs" />
-    <None Include="Assets\AboutAssets.txt" />
-    <None Include="Resources\AboutResources.txt" />
-    <AndroidResource Include="Resources\layout\Tabbar.axml" />
-    <AndroidResource Include="Resources\layout\Toolbar.axml" />
-    <AndroidResource Include="Resources\values\styles.xml" />
-    <AndroidResource Include="Resources\values\colors.xml" />
-    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon.xml" />
-    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
-    <AndroidResource Include="Resources\mipmap-hdpi\Appicon.png" />
-    <AndroidResource Include="Resources\mipmap-hdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-mdpi\Appicon.png" />
-    <AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xhdpi\Appicon.png" />
-    <AndroidResource Include="Resources\mipmap-xhdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xxhdpi\Appicon.png" />
-    <AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\Appicon.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Fabulous.SimpleElements">
       <HintPath>..\packages\Fabulous.SimpleElements.0.21.0\lib\netstandard2.0\Fabulous.SimpleElements.dll</HintPath>
     </Reference>
@@ -235,6 +211,38 @@
     <Reference Include="Xamarin.Essentials">
       <HintPath>..\packages/Xamarin.Essentials.0.6.0-preview/lib/monoandroid71/Xamarin.Essentials.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-mdpi\AppiconWhiteBackground.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\AppiconTransparent.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\Appicon.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
+    <None Include="Properties\AndroidManifest.xml" />
+    <Compile Include="Properties\AssemblyInfo.fs" />
+    <Compile Include="MainActivity.fs" />
+    <None Include="Assets\AboutAssets.txt" />
+    <None Include="Resources\AboutResources.txt" />
+    <AndroidResource Include="Resources\layout\Tabbar.axml" />
+    <AndroidResource Include="Resources\layout\Toolbar.axml" />
+    <AndroidResource Include="Resources\values\styles.xml" />
+    <AndroidResource Include="Resources\values\colors.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
+    <AndroidResource Include="Resources\mipmap-hdpi\Appicon.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\Appicon.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\AppiconTransparent.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\AppiconWhiteBackground.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\Appicon.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\AppiconTransparent.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\AppiconWhiteBackground.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\Appicon.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\AppiconTransparent.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\AppiconWhiteBackground.png" />
+    <None Include="packages.config" />
     <ProjectReference Include="..\FSharpWeekly\FSharpWeekly.fsproj">
       <Project>{1B77DDFE-5946-4B99-BFC9-032BB707AA09}</Project>
       <Name>FSharpWeekly</Name>
