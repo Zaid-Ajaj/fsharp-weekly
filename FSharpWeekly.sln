@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharpWeekly", "FSharpWeekly\FSharpWeekly.fsproj", "{1B77DDFE-5946-4B99-BFC9-032BB707AA09}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpWeekly", "FSharpWeekly\FSharpWeekly.fsproj", "{1B77DDFE-5946-4B99-BFC9-032BB707AA09}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpWeekly.Android", "FSharpWeekly.Android\FSharpWeekly.Android.fsproj", "{3DFE2686-ABA4-47A3-ABCA-81508C98186A}"
 EndProject
@@ -178,7 +178,7 @@ Global
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.AppStore|iPhoneSimulator.Build.0 = AppStore|iPhoneSimulator
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.AppStore|x64.ActiveCfg = AppStore|iPhone
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.AppStore|x86.ActiveCfg = AppStore|iPhone
-		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Debug|Any CPU.ActiveCfg = Debug|iPhone
+		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Debug|ARM.ActiveCfg = Debug|iPhone
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Debug|ARM64.ActiveCfg = Debug|iPhoneSimulator
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Debug|iPhone.ActiveCfg = Debug|iPhone
@@ -196,6 +196,8 @@ Global
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Release|x64.ActiveCfg = Release|iPhone
 		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Release|x86.ActiveCfg = Release|iPhone
+		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
+		{CF17F293-8EC3-4662-99D4-0EA04881CFA0}.Release|Any CPU.Build.0 = Release|iPhone
 		{52BAA8C5-BDAF-425B-85CB-B940D7DE1933}.Ad-Hoc|Any CPU.ActiveCfg = Release|x64
 		{52BAA8C5-BDAF-425B-85CB-B940D7DE1933}.Ad-Hoc|Any CPU.Build.0 = Release|x64
 		{52BAA8C5-BDAF-425B-85CB-B940D7DE1933}.Ad-Hoc|Any CPU.Deploy.0 = Release|x64
