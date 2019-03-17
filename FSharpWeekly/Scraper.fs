@@ -17,11 +17,21 @@ let formatText (value: string) =
                 .Replace("&#8217;", "’")
                 .Replace("&#8216;", "‘")
 
-let extractLinks (links: HtmlNode) : Link list = 
-    [ for link in links.QuerySelectorAll("li") -> 
-        let url = link.QuerySelector("a").GetAttributeValue("href", "")
-        { Content = formatText link.InnerText; Url = url } ]
-    |> List.filter (fun link -> not (String.IsNullOrWhiteSpace link.Url))
+let extractAnchorUrl (node: HtmlNode) =
+    let anchorNode = node.QuerySelector("a")
+    if not (isNull anchorNode) then
+        let url = anchorNode.GetAttributeValue("href", "")
+        if url <> ""
+        then Some (url, node.InnerText)
+        else None
+    else
+        None
+       
+let extractLinks (links: HtmlNode) : Link list =
+    links.QuerySelectorAll("li")
+    |> Seq.choose extractAnchorUrl
+    |> Seq.map (fun (url, content) -> { Content = formatText content; Url = url })
+    |> List.ofSeq
 
 let getArticleCategories (article: HtmlNode) : Category list = 
     let categoryNames = article.QuerySelectorAll("p > strong")
