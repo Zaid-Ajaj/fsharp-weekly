@@ -7,6 +7,7 @@ Built in F# (of course) using [Fabulous](https://github.com/fsprojects/Fabulous)
 The main application code can be found in directory FSharpWeekly and contains:
  - [Types.fs](https://github.com/Zaid-Ajaj/fsharp-weekly/blob/master/FSharpWeekly/Types.fs) the type definitions that the application uses
  - [Scraper.fs](https://github.com/Zaid-Ajaj/fsharp-weekly/blob/master/FSharpWeekly/Scraper.fs) functions to parse and extract links from the F# weekly website
+  - [GithubScraper.fs](https://github.com/Zaid-Ajaj/fsharp-weekly/blob/master/FSharpWeekly/GithubScraper.fs) functions to parse github F# repository information from the trending page of github.
  - [FSharpWeekly.fs](https://github.com/Zaid-Ajaj/fsharp-weekly/blob/master/FSharpWeekly/FSharpWeekly.fs) contains the application logic, how the state is updated and how the application is rendered.
 
 Published to:
@@ -16,6 +17,9 @@ Published to:
 
 ### Android Screenshots
 ![](screenshots.png)
+
+### Github Trending for F# Repos
+![](github-trending.png)
 
 ### Universal Windows Screenshots 
 ![](uwp.png)

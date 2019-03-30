@@ -16,6 +16,14 @@ type BlogEntry = {
     Categories: Category list
 }
 
+type GithubRepository = {
+    Name : string 
+    Owner: string
+    Url : string
+    Description: string
+    StarCount: int
+}
+
 type Remote<'t> =
     | Empty
     | Loading
@@ -24,6 +32,7 @@ type Remote<'t> =
 
 type State = {
     Blogs: Remote<BlogEntry list>
+    TrendyGithubRepositories : Remote<GithubRepository list>
     CurrentBlog : Option<BlogEntry>
     ShowingSettings : bool
     VisitedLinks : string list
@@ -40,3 +49,7 @@ type Msg =
     | ShowSettings
     | ToggleLinkTracking
     | ClearVisitedLinks
+    | LoadRepos
+    | PageIndexChanged of int
+    | ReposLoaded of GithubRepository list
+    | ReposLoadFailure of string

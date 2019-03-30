@@ -15,6 +15,7 @@ module App =
 
     let initModel = {
         Blogs = Remote.Empty;
+        TrendyGithubRepositories = Remote.Empty
         CurrentBlog = None
         VisitedLinks = [ ]
         ShowingSettings = false
@@ -31,6 +32,14 @@ module App =
             | Choice2Of2 error -> return BlogsLoadFailure "Error while loading blog entries from F# weekly"
         })
 
+    let extractTrendyRepos() =
+        Cmd.ofAsyncMsg (async {
+            let! trendyRepos = Async.Catch(GithubScraper.trendyToday())
+            match trendyRepos with
+            | Choice1Of2 repos -> return ReposLoaded repos
+            | Choice2Of2 ex -> return ReposLoadFailure ex.Message
+        })
+
     let update msg state =
         match msg with
         | LoadBlogs ->
@@ -43,6 +52,24 @@ module App =
 
         | BlogsLoadFailure error ->
             let nextState = { state with Blogs = LoadError error }
+            nextState, Cmd.none
+
+        | PageIndexChanged pageIndex ->
+            match pageIndex with
+            | 0 -> state, Cmd.ofMsg LoadBlogs
+            | 1 -> state, Cmd.ofMsg LoadRepos
+            | n -> state, Cmd.none
+
+        | LoadRepos ->
+            let nextState = { state with TrendyGithubRepositories = Loading }
+            nextState, extractTrendyRepos()
+
+        | ReposLoaded repos ->
+            let nextState = { state with TrendyGithubRepositories = Content repos }
+            nextState, Cmd.none
+
+        | ReposLoadFailure error ->
+            let nextState = { state with TrendyGithubRepositories = LoadError error }
             nextState, Cmd.none
 
         | SelectBlog blogEntry ->
@@ -105,27 +132,30 @@ module App =
                Image.Opacity 0.60
             ]
             
-        let header =
+        let headerNamed name showSettings =
              StackLayout.stackLayout [
                  StackLayout.Orientation StackOrientation.Horizontal
+                 StackLayout.VerticalLayout LayoutOptions.Start
                  StackLayout.Padding 20.0
                  StackLayout.Children [
-                     Image.image [
+                     yield Image.image [
                          Image.Source fsharpIconSource
                          Image.Height 60.0
                          Image.Width 60.0
                      ]
 
-                     Label.label [
-                         Label.Text "FSharp Weekly"
+                     yield Label.label [
+                         Label.Text name
                          Label.FontSize FontSize.Large
                          Label.Margin 10.0
                      ]
 
-                     settingsButton
+                     if showSettings then yield settingsButton
                  ]
              ]
-         
+
+        let blogsHeaders = headerNamed "FSharp Weekly" true
+
         let blogVisited (blog: BlogEntry) =
             state.VisitedLinks
             |> List.exists (fun url -> url = blog.WeekNumber)
@@ -162,6 +192,38 @@ module App =
                 ]
             ]
 
+        // renders a single blog item on the main page 
+        let renderRepoItem (repo: GithubRepository) =
+            StackLayout.stackLayout [
+                StackLayout.Orientation StackOrientation.Vertical
+                StackLayout.Padding 20.0
+
+                StackLayout.Children [
+                    // blog title
+                    
+                    Label.label [
+                        Label.Text (sprintf "%s / %s" repo.Owner repo.Name)
+                        Label.FontSize FontSize.Large
+                        Label.TextColor Color.Black
+                        Label.TextDecorations TextDecorations.Underline
+                        Label.GestureRecognizers [
+                            whenTapped (OpenUrl repo.Url)
+                            whenClicked (OpenUrl repo.Url)
+                        ]
+                    ]
+                    // repo description
+                    Label.label [
+                        Label.Text repo.Description
+                        Label.FontSize FontSize.Small
+                        Label.TextColor Color.Black
+                    ]
+                    // stars
+                    Label.label [
+                        Label.Text (sprintf "☆ %d" repo.StarCount)
+                        Label.FontSize FontSize.Medium
+                    ]
+                ]
+            ]
         // renders a list of blog entries 
         let renderBlogs (entries: BlogEntry list) =
             StackLayout.stackLayout [
@@ -196,7 +258,7 @@ module App =
 
                StackLayout.Children [
                    // header is constant
-                   header
+                   blogsHeaders
                    // the content of blogs in scrollable
                    ScrollView.scrollView [ ScrollView.Content content ]
                ]
@@ -336,41 +398,93 @@ module App =
 
             ScrollView.scrollView [ ScrollView.Content layout ]
 
+        let fsharpBlogsPage = 
+            NavigationPage.navigationPage [
+                NavigationPage.Title "F# Blogs"
+                NavigationPage.OnPopped (fun args -> dispatch (PoppedPage args.Page.ClassId))
+                NavigationPage.Pages [
+                    // render the root page
+                    yield ContentPage.contentPage [
+                        ContentPage.ClassId "main"
+                        ContentPage.HasNavigationBar false
+                        ContentPage.Content mainPage
+                    ]
 
-        NavigationPage.navigationPage [
-            NavigationPage.OnPopped (fun args -> dispatch (PoppedPage args.Page.ClassId))
-            NavigationPage.Pages [
-                // render the root page
-                yield ContentPage.contentPage [
-                    ContentPage.ClassId "main"
-                    ContentPage.HasNavigationBar false
-                    ContentPage.Content mainPage
+                    // if a blog entry is selected -> push it to the page stack
+                    match state.CurrentBlog with
+                    | None -> ()
+                    | Some blog -> yield ContentPage.contentPage [
+                        // remove back button and navigation bar if running on android
+                        ContentPage.HasBackButton (Device.RuntimePlatform <> Device.Android)
+                        ContentPage.HasNavigationBar (Device.RuntimePlatform <> Device.Android)
+                        ContentPage.ClassId Pages.blog
+                        ContentPage.Title blog.WeekNumber
+                        ContentPage.Content (renderBlogContent blog)
+                    ]
+
+                    // if we clicked on the settings button,
+                    // add the settings page to the page stack
+                    if state.ShowingSettings
+                    then yield ContentPage.contentPage [
+                        ContentPage.ClassId Pages.settings
+                        ContentPage.HasBackButton (Device.RuntimePlatform <> Device.Android)
+                        ContentPage.HasNavigationBar (Device.RuntimePlatform <> Device.Android)
+                        ContentPage.Title "Settings"
+                        ContentPage.Content settingsPage
+                    ]
+                ]    
+            ]
+
+        let trendyReposPage =
+
+            let scrollableContent =
+                match state.TrendyGithubRepositories with
+                | Empty ->
+                    View.BoxView()
+                | Loading ->
+                    loader
+                | LoadError error ->
+                    Label.label [ Label.Text ("Error while loading repos: " + error) ]
+                | Content repos ->
+                    StackLayout.stackLayout [
+                        StackLayout.Children [ for repo in repos -> renderRepoItem repo ]
+                    ]
+
+            let repositories =
+                StackLayout.stackLayout [
+
+                    StackLayout.Orientation StackOrientation.Vertical
+                    StackLayout.GestureRecognizers [
+                       // swipe from header to reload blog entries
+                       View.SwipeGestureRecognizer(
+                            direction=SwipeDirection.Down,
+                            swiped = fun args -> dispatch LoadRepos)
+                    ]
+
+                    StackLayout.Children [
+                        headerNamed "Trending F# Repositories" false
+
+                        ScrollView.scrollView [
+                            ScrollView.Content scrollableContent
+                        ]
+                    ]
                 ]
-
-                // if a blog entry is selected -> push it to the page stack
-                match state.CurrentBlog with
+            
+            ContentPage.contentPage [
+                ContentPage.Title "Github"
+                ContentPage.Content repositories
+            ]
+            
+        TabbedPage.tabbedPage [
+            TabbedPage.OnCurrentPageChanged (function
                 | None -> ()
-                | Some blog -> yield ContentPage.contentPage [
-                    // remove back button and navigation bar if running on android
-                    ContentPage.HasBackButton (Device.RuntimePlatform <> Device.Android)
-                    ContentPage.HasNavigationBar (Device.RuntimePlatform <> Device.Android)
-                    ContentPage.ClassId Pages.blog
-                    ContentPage.Title blog.WeekNumber
-                    ContentPage.Content (renderBlogContent blog)
-                ]
+                | Some pageIndex -> dispatch (PageIndexChanged pageIndex))
 
-                // if we clicked on the settings button,
-                // add the settings page to the page stack
-                if state.ShowingSettings
-                then yield ContentPage.contentPage [
-                    ContentPage.ClassId Pages.settings
-                    ContentPage.HasBackButton (Device.RuntimePlatform <> Device.Android)
-                    ContentPage.HasNavigationBar (Device.RuntimePlatform <> Device.Android)
-                    ContentPage.Title "Settings"
-                    ContentPage.Content settingsPage
-                ]
-            ]    
-        ]   
+            TabbedPage.Children [
+                fsharpBlogsPage
+                trendyReposPage
+            ]
+        ]
 
 type PersistedAppConfig = {
     LinkTrackingEnabled: bool

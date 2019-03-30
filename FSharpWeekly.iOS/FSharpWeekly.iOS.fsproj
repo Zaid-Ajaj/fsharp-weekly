@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.props" Condition="Exists('..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.props')" />
   <Import Project="..\packages\Xamarin.Forms.3.4.0.1009999\build\netstandard2.0\Xamarin.Forms.props" Condition="Exists('..\packages\Xamarin.Forms.3.4.0.1009999\build\netstandard2.0\Xamarin.Forms.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -236,8 +237,17 @@
     <ITunesArtwork Include="iTunesArtwork%402x" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Fabulous.Core">
+      <HintPath>..\packages\Fabulous.Core.0.33.2\lib\netstandard2.0\Fabulous.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fabulous.CustomControls">
+      <HintPath>..\packages\Fabulous.CustomControls.0.33.2\lib\netstandard2.0\Fabulous.CustomControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Fabulous.LiveUpdate">
+      <HintPath>..\packages\Fabulous.LiveUpdate.0.33.2\lib\netstandard2.0\Fabulous.LiveUpdate.dll</HintPath>
+    </Reference>
     <Reference Include="Fabulous.SimpleElements">
-      <HintPath>..\packages\Fabulous.SimpleElements.0.21.0\lib\netstandard2.0\Fabulous.SimpleElements.dll</HintPath>
+      <HintPath>..\packages\Fabulous.SimpleElements.0.26.0\lib\netstandard2.0\Fabulous.SimpleElements.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.6.16\lib\netstandard2.0\HtmlAgilityPack.dll</HintPath>
@@ -245,6 +255,7 @@
     <Reference Include="HtmlAgilityPack.CssSelectors.NetCore">
       <HintPath>..\packages\HtmlAgilityPack.CssSelectors.NetCore.1.1.1\lib\netstandard1.5\HtmlAgilityPack.CssSelectors.NetCore.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK-1.0" />
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
@@ -252,40 +263,39 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
-    <Reference Include="Xamarin.iOS" />
+    <Reference Include="Xamarin.Essentials">
+      <HintPath>..\packages\Xamarin.Essentials.1.1.0\lib\xamarinios10\Xamarin.Essentials.dll</HintPath>
+    </Reference>
     <Reference Include="Xamarin.Forms.Core">
-      <HintPath>..\packages\Xamarin.Forms.3.4.0.1009999\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
+      <HintPath>..\packages\Xamarin.Forms.3.6.0.264807\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Platform">
-      <HintPath>..\packages\Xamarin.Forms.3.4.0.1009999\lib\Xamarin.iOS10\Xamarin.Forms.Platform.dll</HintPath>
+      <HintPath>..\packages\Xamarin.Forms.3.6.0.264807\lib\Xamarin.iOS10\Xamarin.Forms.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Platform.iOS">
-      <HintPath>..\packages\Xamarin.Forms.3.4.0.1009999\lib\Xamarin.iOS10\Xamarin.Forms.Platform.iOS.dll</HintPath>
+      <HintPath>..\packages\Xamarin.Forms.3.6.0.264807\lib\Xamarin.iOS10\Xamarin.Forms.Platform.iOS.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml">
-      <HintPath>..\packages\Xamarin.Forms.3.4.0.1009999\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
+      <HintPath>..\packages\Xamarin.Forms.3.6.0.264807\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.iOS" />
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.5.2\lib\netstandard1.6\FSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Fabulous.Core">
-      <HintPath>..\packages\Fabulous.Core.0.32.0\lib\netstandard2.0\Fabulous.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fabulous.LiveUpdate">
-      <HintPath>..\packages\Fabulous.LiveUpdate.0.32.0\lib\netstandard2.0\Fabulous.LiveUpdate.dll</HintPath>
-    </Reference>
-    <Reference Include="Fabulous.CustomControls">
-      <HintPath>..\packages\Fabulous.CustomControls.0.32.0\lib\netstandard2.0\Fabulous.CustomControls.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Essentials">
-      <HintPath>..\packages\Xamarin.Essentials.0.6.0-preview\lib\monoandroid71\Xamarin.Essentials.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\FSharpWeekly\FSharpWeekly.fsproj">
       <Project>{1B77DDFE-5946-4B99-BFC9-032BB707AA09}</Project>
       <Name>FSharpWeekly</Name>
     </ProjectReference>
   </ItemGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.props'))" />
+    <Error Condition="!Exists('..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.targets'))" />
+  </Target>
+  <Import Project="..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.3.6.0.264807\build\Xamarin.Forms.targets')" />
 </Project>

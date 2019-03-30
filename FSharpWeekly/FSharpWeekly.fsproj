@@ -8,18 +8,19 @@
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Scraper.fs" />
+    <Compile Include="GithubScraper.fs" />
     <Compile Include="FSharpWeekly.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fabulous.SimpleElements" Version="0.21.0" />
+    <PackageReference Include="Fabulous.SimpleElements" Version="0.26.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.8.14" />
     <PackageReference Include="HtmlAgilityPack.CssSelectors.NetCore" Version="1.1.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1009999" />
-    <PackageReference Include="Xamarin.Essentials" Version="0.6.0-preview" />
-    <PackageReference Include="Fabulous.Core" Version="0.32.0" />
-    <PackageReference Include="Fabulous.CustomControls" Version="0.32.0" />
-    <PackageReference Include="Fabulous.LiveUpdate" Version="0.32.0" />
+    <PackageReference Include="Xamarin.Forms" Version="3.6.0.264807" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
+    <PackageReference Include="Fabulous.Core" Version="0.33.2" />
+    <PackageReference Include="Fabulous.CustomControls" Version="0.33.2" />
+    <PackageReference Include="Fabulous.LiveUpdate" Version="0.33.2" />
     <PackageReference Include="FSharp.Core" Version="4.5.2" />
     <PackageReference Update="FSharp.Core" Version="4.5.2" /> <!-- workaround for VSMac bug https://github.com/mono/monodevelop/pull/5137 --> 
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
