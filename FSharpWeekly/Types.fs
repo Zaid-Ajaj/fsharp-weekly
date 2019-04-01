@@ -24,6 +24,14 @@ type GithubRepository = {
     StarCount: int
 }
 
+type StackoverflowQuestion = {
+    Title : string
+    Url : string
+    IsAnswered : bool
+    Answers : int
+    Views : int
+}
+
 type Remote<'t> =
     | Empty
     | Loading
@@ -33,6 +41,7 @@ type Remote<'t> =
 type State = {
     Blogs: Remote<BlogEntry list>
     TrendyGithubRepositories : Remote<GithubRepository list>
+    StackoverflowQuestions : Remote<StackoverflowQuestion list>
     CurrentBlog : Option<BlogEntry>
     ShowingSettings : bool
     VisitedLinks : string list
@@ -50,6 +59,9 @@ type Msg =
     | ToggleLinkTracking
     | ClearVisitedLinks
     | LoadRepos
-    | PageIndexChanged of int
     | ReposLoaded of GithubRepository list
     | ReposLoadFailure of string
+    | PageIndexChanged of int
+    | LoadQuestions
+    | QuestionsLoaded of StackoverflowQuestion list
+    | QuestionsLoadFailure of string

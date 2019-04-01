@@ -148,6 +148,8 @@
     <AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
     <AndroidResource Include="Resources\mipmap-hdpi\Appicon.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\github.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\so.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\Appicon.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\launcher_foreground.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\Appicon.png" />

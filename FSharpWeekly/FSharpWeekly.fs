@@ -16,6 +16,7 @@ module App =
     let initModel = {
         Blogs = Remote.Empty;
         TrendyGithubRepositories = Remote.Empty
+        StackoverflowQuestions = Remote.Empty
         CurrentBlog = None
         VisitedLinks = [ ]
         ShowingSettings = false
@@ -40,6 +41,14 @@ module App =
             | Choice2Of2 ex -> return ReposLoadFailure ex.Message
         })
 
+    let getStackoverflowQuestions() =
+        Cmd.ofAsyncMsg(async {
+            let! questions = Async.Catch(Stackoverflow.latestFSharpQuestions())
+            match questions with
+            | Choice1Of2 questions -> return QuestionsLoaded (List.ofSeq questions)
+            | Choice2Of2 error -> return QuestionsLoadFailure error.Message
+        })
+
     let update msg state =
         match msg with
         | LoadBlogs ->
@@ -54,10 +63,23 @@ module App =
             let nextState = { state with Blogs = LoadError error }
             nextState, Cmd.none
 
+        | LoadQuestions ->
+            let nextState = { state with StackoverflowQuestions = Loading }
+            nextState, getStackoverflowQuestions()
+
+        | QuestionsLoaded questions ->
+            let nextState = { state with StackoverflowQuestions = Content questions }
+            nextState, Cmd.none
+
+        | QuestionsLoadFailure error ->
+            let nextState = { state with StackoverflowQuestions = LoadError error }
+            nextState, Cmd.none
+
         | PageIndexChanged pageIndex ->
             match pageIndex with
             | 0 -> state, Cmd.ofMsg LoadBlogs
             | 1 -> state, Cmd.ofMsg LoadRepos
+            | 2 -> state, Cmd.ofMsg LoadQuestions
             | n -> state, Cmd.none
 
         | LoadRepos ->
@@ -401,6 +423,7 @@ module App =
         let fsharpBlogsPage = 
             NavigationPage.navigationPage [
                 NavigationPage.Title "F# Blogs"
+                NavigationPage.Icon "Appicon.png"
                 NavigationPage.OnPopped (fun args -> dispatch (PoppedPage args.Page.ClassId))
                 NavigationPage.Pages [
                     // render the root page
@@ -472,17 +495,101 @@ module App =
             
             ContentPage.contentPage [
                 ContentPage.Title "Github"
+                ContentPage.Icon "github.png"
                 ContentPage.Content repositories
+            ]
+
+        let stackoverflowPage =
+
+            let questionItem (question: StackoverflowQuestion) =
+                let answersText =
+                    match question.Answers with
+                    | 1 -> "1 answer"
+                    | n -> sprintf "%d answers" n
+
+                let viewsText =
+                    match question.Views with
+                    | 1 -> "1 view"
+                    | n -> sprintf "%d views" n
+
+                StackLayout.stackLayout [
+                    StackLayout.Padding 20.0
+                    StackLayout.GestureRecognizers [
+                        whenClicked (OpenUrl question.Url)
+                        whenTapped (OpenUrl question.Url)
+                    ]
+
+                    StackLayout.Children [
+                        Label.label [
+                           Label.FontSize FontSize.Large
+                           Label.Text question.Title
+                           Label.TextColor Color.Black
+                        ]
+
+                        StackLayout.stackLayout [
+                            StackLayout.Orientation StackOrientation.Horizontal
+                            StackLayout.Children [
+                                Label.label [
+                                   Label.FontSize FontSize.Small
+                                   Label.Text answersText
+                                   Label.TextColor (if question.IsAnswered then Color.LightGreen else Color.Gray)
+                                ]
+
+                                Label.label [
+                                   Label.MarginLeft 10.0
+                                   Label.FontSize FontSize.Small
+                                   Label.Text viewsText
+                                   Label.TextColor Color.Gray
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+
+            let questions =
+                StackLayout.stackLayout [
+                    StackLayout.Children [
+                        match state.StackoverflowQuestions with
+                        | Empty ->  yield View.BoxView()
+                        | Loading -> yield loader 
+                        | LoadError errorMsg -> yield Label.label [ Label.Text errorMsg ]
+                        | Content questions -> for question in questions do yield questionItem question
+                    ]
+                ]
+
+            let mainLayout =
+                StackLayout.stackLayout [
+                    StackLayout.Orientation StackOrientation.Vertical
+                    StackLayout.GestureRecognizers [
+                       // swipe from header to reload blog entries
+                       View.SwipeGestureRecognizer(
+                            direction=SwipeDirection.Down,
+                            swiped = fun args -> dispatch LoadQuestions)
+                    ]
+                    StackLayout.Children [
+                        headerNamed "F# Stackoverflow Questions" false
+                        ScrollView.scrollView [
+                            ScrollView.Content questions
+                        ]
+                    ]
+                ]
+
+            ContentPage.contentPage [
+                ContentPage.Title "Stackoverflow"
+                ContentPage.Icon "so.png"
+                ContentPage.Content mainLayout
             ]
             
         TabbedPage.tabbedPage [
             TabbedPage.OnCurrentPageChanged (function
                 | None -> ()
-                | Some pageIndex -> dispatch (PageIndexChanged pageIndex))
+                | Some pageIndex -> dispatch (PageIndexChanged pageIndex)
+            )
 
             TabbedPage.Children [
                 fsharpBlogsPage
                 trendyReposPage
+                stackoverflowPage
             ]
         ]
 

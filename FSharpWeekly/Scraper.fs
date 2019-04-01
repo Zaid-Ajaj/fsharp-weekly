@@ -16,6 +16,8 @@ let formatText (value: string) =
                 .Replace("&amp;","&")
                 .Replace("&#8217;", "’")
                 .Replace("&#8216;", "‘")
+                .Replace("&lt;", "<")
+                .Replace("&gt;", ">")
 
 let extractAnchorUrl (node: HtmlNode) =
     let anchorNode = node.QuerySelector("a")

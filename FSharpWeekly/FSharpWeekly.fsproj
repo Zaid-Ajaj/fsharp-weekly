@@ -9,6 +9,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="Scraper.fs" />
     <Compile Include="GithubScraper.fs" />
+    <Compile Include="Stackoverflow.fs" />
     <Compile Include="FSharpWeekly.fs" />
   </ItemGroup>
   <ItemGroup>
