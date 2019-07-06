@@ -6,28 +6,36 @@ open System.Net.Http
 open HtmlAgilityPack
 open HtmlAgilityPack.CssSelectors.NetCore
 open Types
+open System.Globalization
 
 let readRepositoryInfo (node: HtmlNode) : GithubRepository option = 
     match isNull node with 
     | true -> 
         None
     | false ->
-        try 
-           let allAnchors = node.QuerySelectorAll("a")
+        try
+           let anchor = node.QuerySelector("h1.lh-condensed").QuerySelector("a")
            // scrape the url of the repo
-           let repo = allAnchors.First().Attributes.["href"].Value
+           let repo = anchor.Attributes.["href"].Value
            let repoParts = repo.Split([| '/' |]) |> Array.filter (fun part -> part <> "")
            let name = repoParts.[1]
            let owner = repoParts.[0]
            let url = sprintf "https://github.com%s" repo
-           let description = node.QuerySelector(".py-1").InnerText.Trim()
-           let stars = node.QuerySelectorAll("a.muted-link").First().InnerText.Trim().Replace("\n", "")
+           
+           let description = 
+              let p = node.QuerySelector("p.pr-4")
+              if p = null then "" else p.InnerText.Trim()
+           
+           let sstars = node.QuerySelectorAll("a.mr-3").First().InnerText.Trim().Replace("\n", "")
+           let r, stars = Int32.TryParse(sstars, NumberStyles.AllowThousands, CultureInfo.InvariantCulture)
+           let stars' = if r then stars else -1
+
            let githubRepo = {
              Name = name 
              Url = url
              Description = description
              Owner = owner
-             StarCount = int stars
+             StarCount = stars'
            }
 
            Some githubRepo
@@ -35,8 +43,7 @@ let readRepositoryInfo (node: HtmlNode) : GithubRepository option =
         | ex -> None            
 
 let loadRepos (htmlDoc: HtmlDocument)  = 
-    let reposList = htmlDoc.DocumentNode.QuerySelector("ol.repo-list")
-    reposList.QuerySelectorAll("li.col-12")
+    htmlDoc.DocumentNode.QuerySelectorAll("article.Box-row")
     |> Seq.choose readRepositoryInfo
     |> List.ofSeq
      
