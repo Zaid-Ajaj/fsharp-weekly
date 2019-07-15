@@ -37,10 +37,38 @@ let extractLinks (links: HtmlNode) : Link list =
 
 let getArticleCategories (article: HtmlNode) : Category list = 
     let categoryNames = article.QuerySelectorAll("p > strong")
-    let categoryLinks = article.QuerySelectorAll("ul")
-    categoryLinks
+
+    let categoryLinks = 
+        article.QuerySelectorAll("ul") 
+        |> Seq.map extractLinks 
+        |> Seq.toArray
+
+    let isNewLangSuggestion link = link.Content.StartsWith("New language suggestions")
+
+    let innerListInd = 
+        categoryLinks 
+        |> Array.tryFindIndexBack (List.exists isNewLangSuggestion)
+
+    let categoryLinks' = 
+        match innerListInd with
+        | Some ind ->
+            [|
+                for i in 0..ind - 1 do
+                    yield categoryLinks.[i]
+                yield [
+                    yield! 
+                        categoryLinks.[ind] 
+                        |> List.takeWhile (isNewLangSuggestion >> not)
+                    yield! categoryLinks.[ind + 1]
+                ]
+                for i in ind + 2 .. categoryLinks.Length - 1 do
+                    yield categoryLinks.[i]
+            |]
+        | None -> categoryLinks
+
+    categoryLinks'
     |> Seq.zip categoryNames
-    |> Seq.map (fun (name, links) -> { Name = formatText name.InnerText; Links = extractLinks links })
+    |> Seq.map (fun (name, links) -> { Name = formatText name.InnerText; Links = links })
     |> Seq.toList
 
 let titleAndWeeknumber (article: HtmlNode) = 
