@@ -1,8 +1,8 @@
 // Copyright 2018 Fabulous contributors. See LICENSE.md for license.
 namespace FSharpWeekly
 
-open Fabulous.Core
-open Fabulous.DynamicViews
+open Fabulous
+open Fabulous.XamarinForms
 open Xamarin.Forms
 open System
 open Types
@@ -608,7 +608,7 @@ type App () as app =
 #if DEBUG
         |> Program.withConsoleTrace
 #endif
-        |> Program.runWithDynamicView app
+        |> XamarinFormsProgram.run app
 
 #if DEBUG
     // Uncomment this line to enable live update in debug mode. 
