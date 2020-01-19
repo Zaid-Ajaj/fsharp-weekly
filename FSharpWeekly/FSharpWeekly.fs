@@ -7,6 +7,12 @@ open Xamarin.Forms
 open System
 open Types
 
+module ContentPage = 
+    let Icon image =
+        { new ContentPage.IContentPageProp with 
+            member x.name = "icon" 
+            member x.value = image }
+
 module Pages =
     let [<Literal>] blog = "blog-content"
     let [<Literal>] settings = "settings"
@@ -132,10 +138,10 @@ module App =
             ActivityIndicator.IsRunning true
         ]
 
-    let fsharpIconSource =
+    let fsharpIcon =
         match Device.PlatformServices.RuntimePlatform with
-        | Device.UWP -> ImageSource.FromFile("Assets/fsharp-icon.png")
-        | otherwise -> ImageSource.FromUri(Uri("https://fsharp.org/img/logo/fsharp256.png"))
+        | Device.UWP -> Path "Assets/fsharp-icon.png"
+        | otherwise -> Path "https://fsharp.org/img/logo/fsharp256.png"
 
     let render (state: State) dispatch =
         // gesture recognizers
@@ -144,7 +150,7 @@ module App =
 
         let settingsButton =
             Image.image [
-               Image.Source (ImageSource.FromUri(Uri("https://cdn4.iconfinder.com/data/icons/wirecons-free-vector-icons/32/menu-alt-512.png")))
+               Image.Source (Path "https://cdn4.iconfinder.com/data/icons/wirecons-free-vector-icons/32/menu-alt-512.png")
                Image.HorizontalLayout LayoutOptions.EndAndExpand
                Image.VerticalLayout LayoutOptions.Fill
                Image.BackgroundColor Color.Transparent
@@ -161,14 +167,14 @@ module App =
                  StackLayout.Padding 20.0
                  StackLayout.Children [
                      yield Image.image [
-                         Image.Source fsharpIconSource
+                         Image.Source fsharpIcon
                          Image.Height 60.0
                          Image.Width 60.0
                      ]
 
                      yield Label.label [
                          Label.Text name
-                         Label.FontSize FontSize.Large
+                         Label.FontSize (Named NamedSize.Large)
                          Label.Margin 10.0
                      ]
 
@@ -202,13 +208,13 @@ module App =
                     // blog title
                     Label.label [
                         Label.Text blog.Title
-                        Label.FontSize FontSize.Large
+                        Label.FontSize (Named NamedSize.Large)
                         Label.TextColor (blogLabelColor blog)
                     ]
                     // subtitle: blog week number
                     Label.label [
                         Label.Text blog.WeekNumber
-                        Label.FontSize FontSize.Small
+                        Label.FontSize (Named NamedSize.Small)
                         Label.TextColor (blogLabelColor blog)
                     ]
                 ]
@@ -225,7 +231,7 @@ module App =
                     
                     Label.label [
                         Label.Text (sprintf "%s / %s" repo.Owner repo.Name)
-                        Label.FontSize FontSize.Large
+                        Label.FontSize (Named NamedSize.Large)
                         Label.TextColor Color.Black
                         Label.TextDecorations TextDecorations.Underline
                         Label.GestureRecognizers [
@@ -236,13 +242,13 @@ module App =
                     // repo description
                     Label.label [
                         Label.Text repo.Description
-                        Label.FontSize FontSize.Small
+                        Label.FontSize (Named NamedSize.Small)
                         Label.TextColor Color.Black
                     ]
                     // stars
                     Label.label [
                         Label.Text (sprintf "☆ %d" repo.StarCount)
-                        Label.FontSize FontSize.Medium
+                        Label.FontSize (Named NamedSize.Medium)
                     ]
                 ]
             ]
@@ -275,7 +281,7 @@ module App =
                    // swipe from header to reload blog entries
                    View.SwipeGestureRecognizer(
                         direction=SwipeDirection.Down,
-                        swiped = fun args -> dispatch LoadBlogs)
+                        command = fun () -> dispatch LoadBlogs)
                ]
 
                StackLayout.Children [
@@ -299,7 +305,7 @@ module App =
             let renderLink (link: Link) =
                 Label.label [
                     Label.Text link.Content
-                    Label.FontSize FontSize.Medium
+                    Label.FontSize (Named NamedSize.Medium)
                     Label.TextColor (linkColor link)
                     Label.Margin 5.0
                     Label.TextDecorations TextDecorations.Underline
@@ -315,7 +321,7 @@ module App =
                     StackLayout.PaddingTop 20.0
                     StackLayout.PaddingBottom 20.0
                     StackLayout.Children [
-                        yield Label.label [ Label.Text category.Name; Label.FontSize FontSize.Large; Label.FontAttributes FontAttributes.Bold ]
+                        yield Label.label [ Label.Text category.Name; Label.FontSize (Named NamedSize.Large); Label.FontAttributes FontAttributes.Bold ]
                         yield! [ for link in category.Links -> renderLink link ]
                     ]
                 ]
@@ -324,7 +330,7 @@ module App =
                 StackLayout.Orientation StackOrientation.Vertical
                 StackLayout.Padding 20.0
                 StackLayout.Children [
-                    yield Label.label [ Label.Text blog.Title; Label.FontSize FontSize.Large; ]
+                    yield Label.label [ Label.Text blog.Title; Label.FontSize (Named NamedSize.Large); ]
                     yield! [ for category in blog.Categories -> renderCategory category ]
                 ]
             ]
@@ -339,14 +345,14 @@ module App =
                         StackLayout.Padding 20.0
                         StackLayout.Children [
                              Image.image [
-                                 Image.Source fsharpIconSource
+                                 Image.Source fsharpIcon
                                  Image.Height 60.0
                                  Image.Width 60.0
                              ]
 
                              Label.label [
                                  Label.Text "Settings"
-                                 Label.FontSize FontSize.Large
+                                 Label.FontSize (Named NamedSize.Large)
                                  Label.Margin 10.0
                              ]
                         ]
@@ -363,7 +369,7 @@ module App =
                             StackLayout.Children [
                                 Label.label [
                                     Label.Text "Enable Link Tracking"
-                                    Label.FontSize FontSize.Large
+                                    Label.FontSize (Named NamedSize.Large)
                                 ]
 
                                 Switch.switch [
@@ -391,10 +397,10 @@ module App =
                             StackLayout.VerticalLayout LayoutOptions.EndAndExpand
                             StackLayout.Padding 10.0
                             StackLayout.Children [
-                                Label.label [ Label.Text "Made with ❤ by"; Label.FontSize FontSize.Medium ]
+                                Label.label [ Label.Text "Made with ❤ by"; Label.FontSize (Named NamedSize.Medium) ]
                                 Label.label [
                                     Label.Text "Zaid Ajaj"
-                                    Label.FontSize FontSize.Medium
+                                    Label.FontSize (Named NamedSize.Medium)
                                     Label.TextDecorations TextDecorations.Underline
                                     Label.GestureRecognizers [
                                         whenClicked (OpenUrl "https://github.com/Zaid-Ajaj")
@@ -406,7 +412,7 @@ module App =
 
                         Label.label [
                             Label.Text "Source code available on Github"
-                            Label.FontSize FontSize.Medium
+                            Label.FontSize (Named NamedSize.Medium)
                             Label.MarginBottom 20.0
                             Label.HorizontalLayout LayoutOptions.Center
                             Label.TextDecorations TextDecorations.Underline
@@ -481,7 +487,7 @@ module App =
                        // swipe from header to reload blog entries
                        View.SwipeGestureRecognizer(
                             direction=SwipeDirection.Down,
-                            swiped = fun args -> dispatch LoadRepos)
+                            command = fun () -> dispatch LoadRepos)
                     ]
 
                     StackLayout.Children [
@@ -495,7 +501,7 @@ module App =
             
             ContentPage.contentPage [
                 ContentPage.Title "Github"
-                ContentPage.Icon "github.png"
+               // ContentPage.Icon (Path "github.png")
                 ContentPage.Content repositories
             ]
 
@@ -521,7 +527,7 @@ module App =
 
                     StackLayout.Children [
                         Label.label [
-                           Label.FontSize FontSize.Large
+                           Label.FontSize (Named NamedSize.Large)
                            Label.Text question.Title
                            Label.TextColor Color.Black
                         ]
@@ -530,14 +536,14 @@ module App =
                             StackLayout.Orientation StackOrientation.Horizontal
                             StackLayout.Children [
                                 Label.label [
-                                   Label.FontSize FontSize.Small
+                                   Label.FontSize (Named NamedSize.Small)
                                    Label.Text answersText
                                    Label.TextColor (if question.IsAnswered then Color.LightGreen else Color.Gray)
                                 ]
 
                                 Label.label [
                                    Label.MarginLeft 10.0
-                                   Label.FontSize FontSize.Small
+                                   Label.FontSize (Named NamedSize.Small)
                                    Label.Text viewsText
                                    Label.TextColor Color.Gray
                                 ]
@@ -564,7 +570,7 @@ module App =
                        // swipe from header to reload blog entries
                        View.SwipeGestureRecognizer(
                             direction=SwipeDirection.Down,
-                            swiped = fun args -> dispatch LoadQuestions)
+                            command = fun () -> dispatch LoadQuestions)
                     ]
                     StackLayout.Children [
                         headerNamed "F# Stackoverflow Questions" false
@@ -576,7 +582,7 @@ module App =
 
             ContentPage.contentPage [
                 ContentPage.Title "Stackoverflow"
-                ContentPage.Icon "so.png"
+               // ContentPage.Icon (Path "so.png")
                 ContentPage.Content mainLayout
             ]
             
